@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+import queue
 
 class SearchProblem:
     """
@@ -86,12 +87,53 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
+    stack = util.Stack()
+    is_visited = set()  # Create a Set to store visited nodes
+    stack.push((problem.getStartState(), [], 0))  # Initial State
+
+    while not stack.isEmpty():
+        state, actions, cost = stack.pop()
+
+        if problem.isGoalState(state):
+            return actions
+
+        # If the state is not visited yet, expand
+        if state not in is_visited:
+            is_visited.add(state)
+            for successor, action, stepCost in problem.getSuccessors(state):
+                # Push the successor to the stack if it's not visited
+                if successor not in is_visited:
+                    # Append the current action to the actions list
+                    stack.push((successor, actions + [action], cost + stepCost))
+
+    # Return an empty list if no path
+    return []
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
+
+    queue = util.Queue()
+    is_visited = set()  # Set to keep track of visited nodes
+    queue.push((problem.getStartState(), [], 0))  # (state, actions, cost)
+
+    while not queue.isEmpty():
+        state, actions, cost = queue.pop()
+
+        if problem.isGoalState(state):
+            return actions
+
+        # If the state is not visited, expand
+        if state not in is_visited:
+            is_visited.add(state)
+            for successor, action, stepCost in problem.getSuccessors(state):
+                # Add the successor to the queue if it's not visited
+                if successor not in is_visited:
+                    # Append the current action to the actions list
+                    queue.push((successor, actions + [action], cost + stepCost))
+
+    return []
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
